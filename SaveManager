@@ -1,0 +1,77 @@
+local HttpService = game:GetService("HttpService")
+
+local SaveManager = {}
+
+function ConnectTables(cfg, cfg_base)
+	local new = {}
+	for key, value in pairs(cfg_base) do
+		local cfg_value = cfg[key]
+		if cfg_value then
+			if typeof(value) == "table" then
+				new[key] = ConnectTables(cfg_value, value)
+			else
+				new[key] = cfg_value
+			end
+		else
+			new[key] = value
+		end	
+	end
+
+	return new
+end
+
+SaveManager.CreateDirectory = function(path)
+    local parts = SaveManager.SplitString(path, "\\")
+    for index, folder_name in ipairs(parts) do
+        local crrpath = ""
+        for i=1, index do
+            crrpath = crrpath..parts[i].."\\"
+        end
+
+        if not isfolder(crrpath) then
+            makefolder(crrpath)
+        end
+    end
+    
+end
+SaveManager.SplitString = function(str, delimiter)
+  local result = {}
+  local start = 1
+  while true do
+    local s, e = string.find(str, delimiter, start)
+    if s then
+      table.insert(result, string.sub(str, start, s - 1))
+      start = e + 1
+    else
+      table.insert(result, string.sub(str, start))
+      break
+    end
+  end
+  return result
+end
+
+SaveManager.LoadConfig = function(path, cfg_base)
+    if isfile(path) then
+        local success, data = pcall(function()
+            return HttpService:JSONDecode(readfile(path))
+        end)
+        if success then
+            return ConnectTables(data, cfg_base)
+        end
+    else
+        writefile(path, HttpService:JSONEncode(readfile(cfg_base)))
+    end
+
+    return cfg_base
+end
+
+SaveManager.SaveConfig = function(path, config)
+    local success, data = pcall(function()
+        return HttpService:JSONEncode(config)
+    end)
+    if success then
+        writefile(path, data)
+    end
+end
+
+return SaveManager
