@@ -51,6 +51,7 @@ SaveManager.SplitString = function(str, delimiter)
 end
 
 SaveManager.LoadConfig = function(path, cfg_base)
+    print(path, cfg_base)
     if isfile(path) then
         local success, data = pcall(function()
             return HttpService:JSONDecode(readfile(path))
