@@ -59,7 +59,7 @@ SaveManager.LoadConfig = function(path, cfg_base)
             return ConnectTables(data, cfg_base)
         end
     else
-        writefile(path, HttpService:JSONEncode(readfile(cfg_base)))
+        writefile(path, HttpService:JSONEncode(cfg_base))
     end
 
     return cfg_base
