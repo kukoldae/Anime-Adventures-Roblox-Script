@@ -21,11 +21,11 @@ function ConnectTables(cfg, cfg_base)
 end
 
 SaveManager.CreateDirectory = function(path)
-    local parts = SaveManager.SplitString(path, "\\")
+    local parts = SaveManager.SplitString(path, "/")
     for index, folder_name in ipairs(parts) do
         local crrpath = ""
         for i=1, index do
-            crrpath = crrpath..parts[i].."\\"
+            crrpath = crrpath..parts[i].."/"
         end
 
         if not isfolder(crrpath) then
@@ -51,7 +51,6 @@ SaveManager.SplitString = function(str, delimiter)
 end
 
 SaveManager.LoadConfig = function(path, cfg_base)
-    -- print(path, cfg_base)
     if isfile(path) then
         local success, data = pcall(function()
             return HttpService:JSONDecode(readfile(path))
@@ -60,7 +59,7 @@ SaveManager.LoadConfig = function(path, cfg_base)
             return ConnectTables(data, cfg_base)
         end
     else
-        writefile(path, HttpService:JSONEncode(cfg_base))
+        writefile(path, HttpService:JSONEncode(readfile(cfg_base)))
     end
 
     return cfg_base
